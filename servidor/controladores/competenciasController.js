@@ -10,7 +10,7 @@ function obtenerCompetencias(req, res){
 		var data = {
 			'competencias': resultado
 		}
-		res.send(JSON.stringify(data));
+		res.json(data);
 	});
 }
 
@@ -22,9 +22,17 @@ function obtenerCompetencia(req, res){
 			console.log("Hubo un error en la consulta", error.message);
 			return res.status(404).send("Hubo un error en la consulta");
 		}
-		var data = resultado[0];
-		//console.log(data);
-		res.send(JSON.stringify(data));
+		if(resultado[0]){
+			var data = resultado[0];
+			//console.log(data);
+			res.json(data);
+		}else{
+			var data = {
+				"message": "No hay peliculas con este id"
+			}
+			res.json(data);
+		}
+		
 	});
 }
 
@@ -40,7 +48,7 @@ function obtenerOpciones(req, res){
 		var data = {
 			'peliculas': resultado
 		}
-		res.send(JSON.stringify(data));
+		res.json(data);
 	});	
 
 }
@@ -51,6 +59,10 @@ function crearCompetencia(req, res){
 	var director = req.body.director;
 	var actor = req.body.actor;
 
+	if(nombre.length < 5){
+		return res.status(422).json('El nombre debe tener al menos 5 caracteres')
+	}
+	
   var sql = "INSERT INTO competencias (nombre_competencia, genero_id, director_id, actor_id) VALUES ('"+ nombre +"', '"+ genero +"', '"+ director +"', '" + actor + "')";
 	
 	con.query(sql, function(error, resultado, fields){
@@ -61,10 +73,29 @@ function crearCompetencia(req, res){
 		var data = {
 			'resultado': resultado
 		}
-		res.send(JSON.stringify(data));
+		res.json(data);
 	});
 }
 
+function editarCompetencia(req, res){
+	var id = req.params.id;
+	var nombre = req.body.nombre;
+
+	var sql = "UPDATE competencias SET nombre_competencia = '"+ nombre +"' WHERE id=" + id;
+
+	con.query(sql, function (error, resultado, fields){
+		if(error){
+			console.log("Hubo un error en la consulta", error.message);
+			return res.status(404).send("Hubo un error en la consulta");
+		}
+
+		var data = {
+			'resultado': 'Competencia actualizada'
+		}
+		res.json(data);
+		
+	});
+}
 function borrarCompetencia(req, res){
 	var id = req.params.id;
 	var sql = "DELETE FROM competencias WHERE id = " + id;
@@ -77,7 +108,7 @@ function borrarCompetencia(req, res){
 		var data = {
 			'resultado': 'Competencia Eliminada'
 		}
-		res.send(JSON.stringify(data));
+		res.json(data);
 
 	});
 }
@@ -88,5 +119,6 @@ module.exports = {
 	obtenerCompetencia: obtenerCompetencia,
 	obtenerOpciones: obtenerOpciones,
 	crearCompetencia: crearCompetencia,
+	editarCompetencia: editarCompetencia,
 	borrarCompetencia: borrarCompetencia
 }

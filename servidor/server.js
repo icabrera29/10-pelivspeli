@@ -14,12 +14,14 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-app.get('/competencias', competenciasController.obtenerCompetencias);
-app.get('/competencias/:id', competenciasController.obtenerCompetencia);
-app.get('/competencias/:id/peliculas', competenciasController.obtenerOpciones);
-app.delete('/competencias/:id', competenciasController.borrarCompetencia);
 
+app.get('/competencias/:id/peliculas', competenciasController.obtenerOpciones);
+
+app.get('/competencias/:id', competenciasController.obtenerCompetencia);
+app.put('/competencias/:id', competenciasController.editarCompetencia);
+app.delete('/competencias/:id', competenciasController.borrarCompetencia);
 app.post('/competencias', competenciasController.crearCompetencia);
+app.get('/competencias', competenciasController.obtenerCompetencias);
 
 app.get('/generos', datosController.cargarGeneros);
 app.get('/directores', datosController.cargarDirectores);
